@@ -1,0 +1,6 @@
+language: c
+compiler:
+    - arm-gcc-none-eabi
+script:
+    - make
+

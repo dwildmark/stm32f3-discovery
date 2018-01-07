@@ -26,7 +26,7 @@ OBJCOPY=arm-none-eabi-objcopy
 OBJDUMP=arm-none-eabi-objdump
 SIZE=arm-none-eabi-size
 
-CFLAGS  = -Wall -g -std=c99 -Os  
+CFLAGS  = -Wall -g3 -std=c99 -Os
 CFLAGS += -mlittle-endian -mcpu=cortex-m4  -march=armv7e-m -mthumb
 CFLAGS += -mfpu=fpv4-sp-d16 -mfloat-abi=hard
 CFLAGS += -ffunction-sections -fdata-sections
@@ -80,7 +80,7 @@ program: all
 	openocd -f $(OPENOCD_BOARD_DIR)/stm32f3discovery.cfg -f $(OPENOCD_PROC_FILE) -c "stm_flash `pwd`/$(PROJ_NAME).bin" -c shutdown
 
 debug: program
-	$(GDB) -x extra/gdb_cmds $(PROJ_NAME).elf
+	$(GDB) -x openocd/gdb_cmds $(PROJ_NAME).elf
 
 clean:
 	find ./ -name '*~' | xargs rm -f	

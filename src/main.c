@@ -2,7 +2,11 @@ int main(void)
 {
     int i;
 
-    for (i = 0; i < 5; i++) {
-        __asm volatile ("NOP");
+    SystemInit();
+
+    while (1) {
+        for (i = 0; i < 5; i++) {
+            __asm volatile ("NOP");
+        }
     }
 }

@@ -58,5 +58,5 @@ dkms.conf
 *.log
 
 # Custom
-dirs/
+dirs
 

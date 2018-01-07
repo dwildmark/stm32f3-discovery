@@ -35,6 +35,9 @@
 *.i*86
 *.x86_64
 *.hex
+*.elf
+*.bin
+*.lst
 
 # Debug files
 *.dSYM/
@@ -51,6 +54,9 @@ Module.symvers
 Mkfile.old
 dkms.conf
 
-#Custom
-dirs
+# Logs
+*.log
+
+# Custom
+dirs/
 

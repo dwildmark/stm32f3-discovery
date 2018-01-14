@@ -1,5 +1,5 @@
 # put your *.c source files here, make should handle the rest!
-SRCS = main.c errno.c system_stm32f30x.c
+SRCS = main.c errno.c system_stm32f30x.c ../drivers/src/gpio.c
 
 # all the files will be generated with this name (main.elf, main.bin, main.hex, etc)
 PROJ_NAME=main
@@ -42,6 +42,7 @@ ROOT=$(shell pwd)
 CFLAGS += -I inc 
 CFLAGS += -I CMSIS/Device/ST/STM32F30x/Include
 CFLAGS += -I CMSIS/Include
+CFLAGS += -I drivers/inc
 
 STARTUP = Device/startup_stm32f30x.s # add startup file to build
 

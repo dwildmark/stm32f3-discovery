@@ -12,7 +12,6 @@ static void nops(unsigned nofnops)
 int main(void)
 {
     int i;
-    uint32_t status;
 
     gpio_pin_t pe9 = gpio_request_pin_by_name("PE9");
 

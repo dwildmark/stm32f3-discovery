@@ -25,6 +25,7 @@
  * Author(s): Dennis Wildmark <d.wildmark@gmail.com>
  */
 
+#include <devmap.h>
 #include <gpio.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -55,8 +56,8 @@ enum gpio_bank_id {
 struct gpio_bank {
     enum gpio_bank_id id;
     enum gpio_bank_power_state state;
-    uint32_t *bank_base;
     uint8_t rcc_bit;
+    struct ST_GPIO *gpio_base;
 };
 
 struct gpio_pin {
@@ -73,21 +74,20 @@ static struct gpio_bank bank_list[] = {
     [GPIO_E] = {
         .id = GPIO_E,
         .state = GPIO_BANK_DISABLED,
-        .bank_base = 0x48001000,
         .rcc_bit = 21,
+        .gpio_base = (struct ST_GPIO *)0x48001000,
     },
 };
 
 static struct gpio_pin pins[MAX_NUM_GPIO_PINS] = {
-    {
-        .name = "PE9",
-        .pin_in_bank = 9,
-        .bank = &bank_list[GPIO_E],
-        .mode = GPIO_MODE_OUTPUT,
-        .out_mode = GPIO_OP_MODE_PUSH_PULL,
-        .io_mode = GPIO_IO_MODE_FLOATING,
-        .rq_state = AVAILABLE,
-    },
+    {"PE9", 9, &bank_list[GPIO_E], GPIO_OUTPUT, GPIO_PUSH_PULL, GPIO_FLOATING, AVAILABLE},
+    {"PE8", 8, &bank_list[GPIO_E], GPIO_OUTPUT, GPIO_PUSH_PULL, GPIO_FLOATING, AVAILABLE},
+    {"PE10", 10, &bank_list[GPIO_E], GPIO_OUTPUT, GPIO_PUSH_PULL, GPIO_FLOATING, AVAILABLE},
+    {"PE11", 11, &bank_list[GPIO_E], GPIO_OUTPUT, GPIO_PUSH_PULL, GPIO_FLOATING, AVAILABLE},
+    {"PE12", 12, &bank_list[GPIO_E], GPIO_OUTPUT, GPIO_PUSH_PULL, GPIO_FLOATING, AVAILABLE},
+    {"PE13", 13, &bank_list[GPIO_E], GPIO_OUTPUT, GPIO_PUSH_PULL, GPIO_FLOATING, AVAILABLE},
+    {"PE14", 14, &bank_list[GPIO_E], GPIO_OUTPUT, GPIO_PUSH_PULL, GPIO_FLOATING, AVAILABLE},
+    {"PE15", 15, &bank_list[GPIO_E], GPIO_OUTPUT, GPIO_PUSH_PULL, GPIO_FLOATING, AVAILABLE},
 };
 
 gpio_pin_t gpio_request_pin_by_name(const char *name)
@@ -110,9 +110,7 @@ gpio_pin_t gpio_request_pin_by_name(const char *name)
 int gpio_set_level(gpio_pin_t pin, enum gpio_level level)
 {
     struct gpio_pin *in_pin = pin;
-    volatile uint32_t *gpio_base;
-    volatile uint32_t *gpio_oena;
-    volatile uint32_t *gpio_bsrr_reg;
+    struct ST_GPIO *gpio_base = in_pin->bank->gpio_base;
     volatile uint32_t *rcc_reg = (uint32_t *)0x40021014;
 
     if (NULL == in_pin || in_pin->rq_state != REQUESTED) {
@@ -120,19 +118,16 @@ int gpio_set_level(gpio_pin_t pin, enum gpio_level level)
     }
 
     if (in_pin->bank->state != GPIO_BANK_ENABLED) {
-        *rcc_reg |= 1 << 21;
+        *rcc_reg |= 1 << in_pin->bank->rcc_bit;
         in_pin->bank->state = GPIO_BANK_ENABLED;
     }
 
-    gpio_base = in_pin->bank->bank_base;
-    gpio_bsrr_reg = 0x48001018;
-
-    *gpio_base = 1 << (in_pin->pin_in_bank * 2);
+    gpio_base->MODER |= 1 << (in_pin->pin_in_bank * 2);
 
     if (GPIO_LEVEL_HIGH == level) {
-        *gpio_bsrr_reg = 1 << in_pin->pin_in_bank;
+        gpio_base->BSRR = 1 << in_pin->pin_in_bank;
     } else {
-        *gpio_bsrr_reg = 1 << (in_pin->pin_in_bank + 16);
+        gpio_base->BSRR = 1 << (in_pin->pin_in_bank + 16);
     }
 
     return 0;

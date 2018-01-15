@@ -25,40 +25,18 @@
  * Author(s): Dennis Wildmark <d.wildmark@gmail.com>
  */
 
-typedef void * gpio_pin_t;
+#ifndef DELAY_H
+#define DELAY_H
 
-enum gpio_level {
-    GPIO_LEVEL_LOW = 0,
-    GPIO_LEVEL_HIGH = 1,
-    _INVALID_GPIO_LEVEL,
-};
+#include <stdint.h>
 
-enum gpio_mode {
-    GPIO_INPUT,
-    GPIO_OUTPUT,
-    _INVALID_GPIO_MODE,
-};
+static inline void delay_ms(uint32_t ms)
+{
+    int i;
+    uint64_t nops = ms * 9000;
+    for (i = 0; i < nops; i++) {
+        __asm volatile ("NOP");
+    }
+}
 
-enum gpio_output_mode {
-    GPIO_PUSH_PULL,
-    GPIO_OPEN_DRAIN,
-    _INVALID_GPIO_OP_MODE,
-};
-
-enum gpio_io_mode {
-    GPIO_FLOATING,
-    GPIO_PULL_UP,
-    GPIO_PULL_DOWN,
-    _INVALID_GPIO_IO_MODE,
-};
-
-
-gpio_pin_t gpio_request_pin_by_name(const char *name);
-
-int
-gpio_set_level(gpio_pin_t pin, enum gpio_level level);
-
-enum gpio_level
-gpio_get_level(gpio_pin_t pin);
-
-void gpio_release_pin(gpio_pin_t pin);
+#endif /* DELAY_H */

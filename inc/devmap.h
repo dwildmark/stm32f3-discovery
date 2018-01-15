@@ -25,40 +25,29 @@
  * Author(s): Dennis Wildmark <d.wildmark@gmail.com>
  */
 
-typedef void * gpio_pin_t;
+#ifndef DEVMAP_H
+#define DEVMAP_H
 
-enum gpio_level {
-    GPIO_LEVEL_LOW = 0,
-    GPIO_LEVEL_HIGH = 1,
-    _INVALID_GPIO_LEVEL,
-};
+#include <stdint.h>
 
-enum gpio_mode {
-    GPIO_INPUT,
-    GPIO_OUTPUT,
-    _INVALID_GPIO_MODE,
-};
+#define _RO const volatile
+#define _WO volatile
+#define _RW volatile
 
-enum gpio_output_mode {
-    GPIO_PUSH_PULL,
-    GPIO_OPEN_DRAIN,
-    _INVALID_GPIO_OP_MODE,
-};
-
-enum gpio_io_mode {
-    GPIO_FLOATING,
-    GPIO_PULL_UP,
-    GPIO_PULL_DOWN,
-    _INVALID_GPIO_IO_MODE,
+struct ST_GPIO {
+    _RW uint32_t MODER;
+    _RW uint32_t OTYPER;
+    _RW uint32_t OSPEEDR;
+    _RW uint32_t PUPDR;
+    _RO uint32_t IDR;
+    _RW uint32_t ODR;
+    _WO uint32_t BSRR;
+    _RW uint32_t LCKR;
+    _RW uint32_t AFRL;
+    _RW uint32_t AFRH;
+    _WO uint32_t BRR;
 };
 
 
-gpio_pin_t gpio_request_pin_by_name(const char *name);
 
-int
-gpio_set_level(gpio_pin_t pin, enum gpio_level level);
-
-enum gpio_level
-gpio_get_level(gpio_pin_t pin);
-
-void gpio_release_pin(gpio_pin_t pin);
+#endif /* DEVMAP_H */
